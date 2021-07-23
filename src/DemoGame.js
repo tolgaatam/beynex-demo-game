@@ -123,26 +123,28 @@ export default function DemoGame() {
 
     //event listener to handle keyboard inputs
     useEffect(()=>{
-        document.addEventListener('keydown',(e)=>{
-            switch (e.key) {
-                case 'ArrowUp':
+        let listenerFunc = (e)=>{
+            e.preventDefault();
+            switch (e.keyCode) {
+                case 38:
                     // up arrow
                     onPress('up')
                     break;
-                case 'ArrowDown':
+                case 40:
                     onPress('down')
                     // down arrow
                     break;
-                case 'ArrowLeft':
+                case 37:
                     onPress('left')
                     // left arrow
                     break;
-                case 'ArrowRight':
+                case 39:
                     onPress('right')
                 // right arrow
             }
-        })
-        return ()=> document.removeEventListener('keydown')
+        }
+        document.addEventListener('keydown',listenerFunc)
+        return ()=> document.removeEventListener('keydown', listenerFunc)
     },[])
 
     //game finished
