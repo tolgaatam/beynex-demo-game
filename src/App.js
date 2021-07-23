@@ -1,13 +1,9 @@
-import './App.css';
-import BeynexClinicianGame from "./ClinicianGame";
+import React from 'react';
+import DemoGame from "./DemoGame";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <BeynexClinicianGame/>
-      </header>
-    </div>
+      <DemoGame/>
   );
 }
 
