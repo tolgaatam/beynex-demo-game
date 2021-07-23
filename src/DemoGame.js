@@ -65,7 +65,7 @@ export default function DemoGame() {
                 setGameState(false)
                 gameplay.current.isPlaying = false
             }else{
-                const rand = uniqueRandom(random, possibleQuestion.length)
+                const rand = uniqueRandom(gameplay.current.random, possibleQuestion.length)
                 indicatorVal.value = withSequence(withTiming(gameplay.current.result ? 1 : -1, {duration: 200}, ()=>{
                     gameplay.current.result = false
                     gameplay.current.random = rand
@@ -73,7 +73,7 @@ export default function DemoGame() {
                 }),withTiming(0, {duration: 200}, ()=>{
                     gameplay.current.currentRound++
                     gameplay.current.disableButtons = false
-                    
+
                     startTimer()
                 }))
             }
@@ -92,7 +92,7 @@ export default function DemoGame() {
         gameplay.current.currentRound = 1
         gameplay.current.isPlaying = true
         gameplay.current.disableButtons = false
-        
+
         //
         let i = 3
 
@@ -103,7 +103,7 @@ export default function DemoGame() {
             }else{
                 clearInterval(interval)
                 gameTemplateVal.value = withTiming(1, {}, () => {
-                    startTimer() 
+                    startTimer()
                 })
             }
         }, 1000);
@@ -139,7 +139,7 @@ export default function DemoGame() {
                     break;
                 case 'ArrowRight':
                     onPress('right')
-                    // right arrow
+                // right arrow
             }
         })
         return ()=> document.removeEventListener('keydown')
@@ -209,7 +209,7 @@ export default function DemoGame() {
             opacity: opacity
         }
     })
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -242,19 +242,19 @@ export default function DemoGame() {
                     <Feather name='arrow-down' size={32} color={'white'}/>
                 </TouchableOpacity>
             </View>
-            
+
             <Animated.View style={[styles.gameComponent, gameTemplate]}>
-                
+
                 <Text style={{fontSize: 100, position: 'absolute', color: 'white'}}>
                     {counter}
                 </Text>
                 {
                     !isPlaying &&
                     <Animated.View style={styles.scoreTable}>
-                        <Text style={styles.title}>
+                        <Text style={[styles.title]}>
                             {'Swipy Mind'}
                         </Text>
-                        <Text style={styles.welcomeText}>
+                        <Text style={[styles.welcomeText, {textAlign: 'center'}]}>
                             {'Welcome to the Swipy Mind mini flexibility game!'}
                         </Text>
                         <View style={{flexDirection: 'row', marginTop: 32, justifyContent: "space-evenly"}}>
@@ -262,7 +262,7 @@ export default function DemoGame() {
                                 <Text style={[{color: greenLight, fontWeight: '600', fontSize: 28}]}>
                                     {gameplay.current.currentRound !== 1 ? trueCount : '-'}
                                 </Text>
-                                <Text style={[styles.correctText]}>
+                                <Text style={[styles.correctText]} >
                                     {'CORRECT'}
                                 </Text>
                             </View>
@@ -285,7 +285,7 @@ export default function DemoGame() {
                         </Text>
                     </Animated.View>
                 }
-                
+
             </Animated.View>
         </View>
     );
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderWidth: 2,
-        borderColor: 'rgba(230, 233, 237, 1.0)',        
+        borderColor: 'rgba(230, 233, 237, 1.0)',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
@@ -384,6 +384,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderWidth: 4,
         borderColor: whiteAlpha,
+        minWidth: 200
     },
     playText: {
         fontSize: 20,
@@ -392,59 +393,61 @@ const styles = StyleSheet.create({
         color: "white"
     },
     correctText: {
-        color: greenLight, 
-        fontWeight: '600', 
-        marginTop: 10, 
+        color: greenLight,
+        fontWeight: '600',
+        marginTop: 10,
         fontSize: 14
     },
     correctTextContainer: {
-        alignItems: 'center',  
-        width: "33%", 
-        paddingVertical: 7, 
-        borderRadius: 10, 
-        borderWidth: 2, 
-        backgroundColor: "rgba(200,245,200,0.33)", 
-        borderColor: greenLightAlpha
+        alignItems: 'center',
+        width: "33%",
+        paddingVertical: 7,
+        borderRadius: 10,
+        borderWidth: 2,
+        backgroundColor: "rgba(200,245,200,0.33)",
+        borderColor: greenLightAlpha,
+        minWidth: 80
     },
     falseContainer: {
-        alignItems: 'center',   
-        width: "33%", 
-        paddingVertical: 7, 
+        alignItems: 'center',
+        width: "33%",
+        paddingVertical: 7,
         borderRadius: 10,
-        backgroundColor: "rgba(245,200,200,0.2)", 
-        borderWidth: 2, 
-        borderColor: "rgba(240,140,140,0.65)"
+        backgroundColor: "rgba(245,200,200,0.2)",
+        borderWidth: 2,
+        borderColor: "rgba(240,140,140,0.65)",
+        minWidth: 80
     },
     falseText: {
-        color: "rgba(240,140,140,1.0)", 
-        fontWeight: '600', 
-        marginTop: 10, 
+        color: "rgba(240,140,140,1.0)",
+        fontWeight: '600',
+        marginTop: 10,
         fontSize: 14
     },
     welcomeText: {
-        color: "rgba(74,76,90,0.65)", 
-        marginTop: 16, 
-        alignSelf: "center", 
-        fontSize: 18, 
+        color: "rgba(74,76,90,0.65)",
+        marginTop: 16,
+        alignSelf: "center",
+        fontSize: 18,
         fontWeight: '400'
-    }, 
+    },
     title: {
-        color: "rgba(74,76,90,1.0)", 
-        marginTop: 16, 
-        alignSelf: "center", 
-        fontSize: 34, 
+        color: "rgba(74,76,90,1.0)",
+        marginTop: 16,
+        alignSelf: "center",
+        fontSize: 34,
         fontWeight: '700'
     },
     questionText: {
-        fontSize: 23, 
-        fontWeight: '400', 
+        fontSize: 23,
+        fontWeight: '400',
         color: "rgba(74,76,90,1.0)"
     },
     footer: {
-        color: "rgba(74,76,90,0.75)", 
-        marginTop: 20, 
-        alignSelf: "center", 
-        fontSize: 10, 
+        color: "rgba(74,76,90,0.75)",
+        marginTop: 20,
+        alignSelf: "center",
+        fontSize: 10,
         fontWeight: '400'
     }
 });
