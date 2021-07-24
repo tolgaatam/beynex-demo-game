@@ -2,6 +2,7 @@ import Feather from 'react-native-vector-icons/dist/Feather';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity } from 'react-native';
 import Animated, { useSharedValue, withTiming, useAnimatedStyle, runOnJS, interpolate, Easing, Extrapolate, withSequence, cancelAnimation} from 'react-native-reanimated';
+import {TouchableWithoutFeedback} from "react-native-web";
 
 const possibleQuestion = [
     {text:'Up', answer: 'up'},
@@ -45,6 +46,11 @@ export default function DemoGame() {
     const animVal = useSharedValue(0)
     const indicatorVal = useSharedValue(0)
     const gameTemplateVal = useSharedValue(0)
+
+    const leftClickVal = useSharedValue(-1);
+    const upClickVal = useSharedValue(-1);
+    const rightClickVal = useSharedValue(-1);
+    const downClickVal = useSharedValue(-1);
 
     //variables related game, animations and flags (some variables added even they are already presented beacause state variables in listeners doesn't get updated but ref variables does.)
     const gameplay = useRef({
@@ -109,10 +115,30 @@ export default function DemoGame() {
         }, 1000);
     },[])
 
+    const animatePressedArrowButton = (val) => {
+        val.value = withSequence(withTiming(0, {duration: 100}), withTiming(-1, {duration: 100}))
+    }
+
     //on arrows pressed
-    const onPress = (direction) => {
+    const onPressArrow = (direction) => {
         if(!gameplay.current.disableButtons && gameplay.current.isPlaying){
             gameplay.current.disableButtons = true
+
+            switch (direction){
+                case 'left':
+                    animatePressedArrowButton(leftClickVal)
+                    break;
+                case 'up':
+                    animatePressedArrowButton(upClickVal)
+                    break;
+                case 'right':
+                    animatePressedArrowButton(rightClickVal)
+                    break;
+                case 'down':
+                    animatePressedArrowButton(downClickVal)
+                    break;
+            }
+
             gameplay.current.result = (!possibleQuestion[gameplay.current.random].not && possibleQuestion[gameplay.current.random].answer === direction) || (possibleQuestion[gameplay.current.random].not && possibleQuestion[gameplay.current.random].answer !== direction)
             if(gameplay.current.result){
                 setTrueCount(trueCount => trueCount + 1)
@@ -128,18 +154,18 @@ export default function DemoGame() {
             switch (e.keyCode) {
                 case 38:
                     // up arrow
-                    onPress('up')
+                    onPressArrow('up')
                     break;
                 case 40:
-                    onPress('down')
+                    onPressArrow('down')
                     // down arrow
                     break;
                 case 37:
-                    onPress('left')
+                    onPressArrow('left')
                     // left arrow
                     break;
                 case 39:
-                    onPress('right')
+                    onPressArrow('right')
                 // right arrow
             }
         }
@@ -212,6 +238,54 @@ export default function DemoGame() {
         }
     })
 
+    const leftIndicator = useAnimatedStyle(()=>{
+        const opacity = interpolate(leftClickVal.value,
+            [-1,0],
+            [1,0.4],
+            Extrapolate.CLAMP
+        )
+
+        return {
+            opacity: opacity
+        }
+    })
+
+    const upIndicator = useAnimatedStyle(()=>{
+        const opacity = interpolate(upClickVal.value,
+            [-1,0],
+            [1,0.4],
+            Extrapolate.CLAMP
+        )
+
+        return {
+            opacity: opacity
+        }
+    })
+
+    const rightIndicator = useAnimatedStyle(()=>{
+        const opacity = interpolate(rightClickVal.value,
+            [-1,0],
+            [1,0.4],
+            Extrapolate.CLAMP
+        )
+
+        return {
+            opacity: opacity
+        }
+    })
+
+    const downIndicator = useAnimatedStyle(()=>{
+        const opacity = interpolate(downClickVal.value,
+            [-1,0],
+            [1,0.4],
+            Extrapolate.CLAMP
+        )
+
+        return {
+            opacity: opacity
+        }
+    })
+
     return (
         <View style={styles.container}>
             <View style={styles.box}>
@@ -229,20 +303,32 @@ export default function DemoGame() {
                 <Animated.View style={[styles.timer, timer]}/>
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={()=>onPress('up')}>
-                    <Feather name='arrow-up' size={32} color={'white'}/>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={()=>onPressArrow('up')}>
+                    <Animated.View style={[styles.button, upIndicator]}>
+                        <Feather name='arrow-up' size={32} color={'white'}/>
+                    </Animated.View>
+                </TouchableWithoutFeedback>
                 <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-between',}}>
-                    <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={()=>onPress('left')}>
-                        <Feather name='arrow-left' size={32} color={'white'}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={()=>onPress('right')}>
-                        <Feather name='arrow-right' size={32} color={'white'}/>
-                    </TouchableOpacity>
+
+                    <TouchableWithoutFeedback onPress={()=>onPressArrow('left')}>
+                        <Animated.View style={[styles.button, leftIndicator]}>
+                            <Feather name='arrow-left' size={32} color={'white'}/>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
+
+                    <TouchableWithoutFeedback onPress={()=>onPressArrow('right')}>
+                        <Animated.View style={[styles.button, rightIndicator]}>
+                            <Feather name='arrow-right' size={32} color={'white'}/>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>
+
                 </View>
-                <TouchableOpacity style={styles.button} activeOpacity={0.9} onPress={()=>onPress('down')}>
-                    <Feather name='arrow-down' size={32} color={'white'}/>
-                </TouchableOpacity>
+                <TouchableWithoutFeedback onPress={()=>onPressArrow('down')}>
+                    <Animated.View style={[styles.button, downIndicator]}>
+                        <Feather name='arrow-down' size={32} color={'white'}/>
+                    </Animated.View>
+                </TouchableWithoutFeedback>
+
             </View>
 
             <Animated.View style={[styles.gameComponent, gameTemplate]}>
@@ -256,10 +342,10 @@ export default function DemoGame() {
                         <Text style={[styles.title]}>
                             {'Swipy Mind'}
                         </Text>
-                        <Text style={[styles.welcomeText, {textAlign: 'center'}]}>
-                            {'Welcome to the Swipy Mind mini flexibility game!'}
+                        <Text style={[styles.welcomeText, {textAlign: 'center'}, gameplay.current.currentRound !== 1 ? {height: 1, visibility: 'hidden'}:{}]}>
+                            {'Welcome to Swipy Mind, a mini flexibility game!'}
                         </Text>
-                        <View style={{flexDirection: 'row', marginTop: 32, justifyContent: "space-evenly"}}>
+                        <View style={{display: gameplay.current.currentRound === 1 ? 'none': 'flex', flexDirection: 'row', marginTop: 32, justifyContent: "space-evenly"}}>
                             <View style={styles.correctTextContainer}>
                                 <Text style={[{color: greenLight, fontWeight: '600', fontSize: 28}]}>
                                     {gameplay.current.currentRound !== 1 ? trueCount : '-'}
@@ -273,13 +359,13 @@ export default function DemoGame() {
                                     {gameplay.current.currentRound !== 1 ? (gameplay.current.totalRound - trueCount) : '-'}
                                 </Text>
                                 <Text style={[styles.falseText]}>
-                                    {'FALSE'}
+                                    {'INCORRECT'}
                                 </Text>
                             </View>
                         </View>
                         <TouchableOpacity activeOpacity={0.9} style={styles.playButton} onPress={onPressPlay}>
                             <Text style={styles.playText}>
-                                Play
+                                {gameplay.current.currentRound === 1 ? 'Play': 'Play again'}
                             </Text>
                         </TouchableOpacity>
                         <Text style={styles.footer}>
@@ -340,7 +426,8 @@ const styles = StyleSheet.create({
         borderColor: whiteAlpha,
         backgroundColor: greenLight,
         justifyContent :'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        cursor: 'pointer'
     },
     indicator: {
         width: '100%',
