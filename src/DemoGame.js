@@ -1,7 +1,7 @@
 import Feather from 'react-native-vector-icons/dist/Feather';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity } from 'react-native';
-import Animated, { useSharedValue, withTiming, useAnimatedStyle, runOnJS, interpolate, Easing, Extrapolate, withSequence, cancelAnimation} from 'react-native-reanimated';
+import Animated, { useSharedValue, withDelay, withTiming, useAnimatedStyle, runOnJS, interpolate, Easing, Extrapolate, withSequence, cancelAnimation} from 'react-native-reanimated';
 import {TouchableWithoutFeedback} from "react-native-web";
 
 const possibleQuestion = [
@@ -72,16 +72,16 @@ export default function DemoGame() {
                 gameplay.current.isPlaying = false
             }else{
                 const rand = uniqueRandom(gameplay.current.random, possibleQuestion.length)
-                indicatorVal.value = withSequence(withTiming(gameplay.current.result ? 1 : -1, {duration: 200}, ()=>{
+                indicatorVal.value = withSequence(withTiming(gameplay.current.result ? 1 : -1, {duration: 100}, ()=>{
                     gameplay.current.result = false
                     gameplay.current.random = rand
                     runOnJS(setRandom)(rand)
-                }),withTiming(0, {duration: 200}, ()=>{
+                }),withDelay(150, withTiming(0, {duration: 250}, ()=>{
                     gameplay.current.currentRound++
                     gameplay.current.disableButtons = false
 
                     startTimer()
-                }))
+                })))
             }
 
         })
@@ -354,11 +354,11 @@ export default function DemoGame() {
                                     {'CORRECT'}
                                 </Text>
                             </View>
-                            <View style={styles.falseContainer}>
+                            <View style={styles.incorrectTextContainer}>
                                 <Text style={[{color: "rgba(240,100,100,1.0)", fontWeight: '600', fontSize: 28,}]}>
                                     {gameplay.current.currentRound !== 1 ? (gameplay.current.totalRound - trueCount) : '-'}
                                 </Text>
-                                <Text style={[styles.falseText]}>
+                                <Text style={[styles.incorrectText]}>
                                     {'INCORRECT'}
                                 </Text>
                             </View>
@@ -395,7 +395,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        marginTop: 10,
     },
     timerContainer: {
         width: 200,
@@ -495,9 +496,9 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         backgroundColor: "rgba(200,245,200,0.33)",
         borderColor: greenLightAlpha,
-        minWidth: 80
+        minWidth: 100
     },
-    falseContainer: {
+    incorrectTextContainer: {
         alignItems: 'center',
         width: "33%",
         paddingVertical: 7,
@@ -505,9 +506,9 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(245,200,200,0.2)",
         borderWidth: 2,
         borderColor: "rgba(240,140,140,0.65)",
-        minWidth: 80
+        minWidth: 100
     },
-    falseText: {
+    incorrectText: {
         color: "rgba(240,140,140,1.0)",
         fontWeight: '600',
         marginTop: 10,
